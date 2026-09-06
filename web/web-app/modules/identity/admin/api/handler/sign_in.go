@@ -13,6 +13,8 @@ import (
 // SignIn handles the admin sign-in request from the form,
 // validates credentials, creates the session cookie (refresh token),
 // and redirects the user to the goep-admin .
+
+// To show the loadign, one idea is that you send the loading signal, without then putting the return a if the function does not finish.
 func (h *Handler) SignIn(w http.ResponseWriter, r *http.Request) {
 	// Parse the form
 	err := r.ParseMultipartForm(10 << 20) // 10MB maximum

@@ -159,6 +159,7 @@ func New() http.Handler {
 			AdminSrv:    identityMdl.AdminSrv,
 			TCService:   aiMdl.TCService,
 			PostService: postMdl.PostService,
+			RolesSrv:    identityMdl.RoleSrv,
 		},
 	})
 

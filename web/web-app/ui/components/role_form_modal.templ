@@ -1,0 +1,133 @@
+package components
+
+templ RoleFormModal() {
+
+	@Modal(
+		"role-form-modal",
+		"$modal.domain == 'role' && $modal.action == 'form'",
+	) {
+
+		<div class="w-full rounded-xl bg-white p-7 shadow-[0_20px_50px_rgba(0,0,0,0.25)]">
+
+			<h2 class="mb-2 text-[22px] font-semibold text-zinc-900">
+
+				<span
+					data-show="$role_form.id == ''"
+				>
+					Create role
+				</span>
+
+				<span
+					data-show="$role_form.id != ''"
+				>
+					Edit role
+				</span>
+
+			</h2>
+
+			<p class="mb-6 text-sm text-zinc-500">
+
+				<span
+					data-show="$role_form.id == ''"
+				>
+					Create a new role for your application.
+				</span>
+
+				<span
+					data-show="$role_form.id != ''"
+				>
+					Update the selected role.
+				</span>
+
+			</p>
+
+			<div class="mb-5">
+
+				<label
+					class="mb-1.5 block text-sm font-medium text-zinc-700"
+				>
+					Name
+				</label>
+
+				<input
+					type="text"
+					class="block w-full rounded-lg border border-zinc-300 bg-white px-3 py-2.5 text-sm text-zinc-900 outline-none placeholder:text-zinc-400 focus:border-black focus:ring-1 focus:ring-black"
+					data-bind:role_form.name
+					placeholder="Enter role name"
+					data-attr="$is_loading"
+				/>
+
+			</div>
+
+			<div
+				data-show="$error != ''"
+				style="display: none;"
+				class="mb-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+			>
+				<span data-text="$error"></span>
+			</div>
+
+			<div class="flex justify-end gap-2.5">
+
+				<button
+					type="button"
+					class="rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-sm font-medium text-zinc-900 transition-colors hover:border-black hover:bg-zinc-50"
+					data-attr="$is_loading"
+					data-on:click="
+						$modal.domain = '';
+						$modal.action = '';
+
+						$role_form.id = '';
+						$role_form.name = '';
+
+						$error = '';
+					"
+				>
+					Cancel
+				</button>
+
+				<button
+					type="button"
+					class="rounded-lg bg-black px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-zinc-800"
+					data-attr:disabled="$is_loading"
+					data-on:click="
+						$error = '';
+						$is_loading = true;
+						$role_form.id == ''
+							? @post('/v1/roles')
+							: @put('/v1/roles/' + $role_form.id)
+					"
+				>	
+
+					<span
+						data-show="$is_loading"
+						style="display: none;"
+						class="flex items-center gap-2"
+					>
+						<span class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+
+						<span>Saving...</span>
+					</span>
+
+					<span
+						data-show="!$is_loading && $role_form.id == ''"
+					>
+						Create
+					</span>
+
+					<span
+						data-show="!$is_loading && $role_form.id != ''"
+						style="display: none;"
+					>
+						Update
+					</span>
+
+				</button>
+
+
+			</div>
+
+		</div>
+
+	}
+}

@@ -1,0 +1,41 @@
+package components
+
+templ ModalImageContent(
+	image string,
+	title string,
+	description string,
+	buttonText string,
+	buttonColor string,
+	buttonAction string,
+) {
+
+	<div class="w-full rounded-xl bg-white p-7 shadow-[0_20px_50px_rgba(0,0,0,0.25)]">
+
+		<div class="mb-5 h-[180px] w-full overflow-hidden rounded-lg bg-zinc-100">
+
+			<img
+				src={ image }
+				alt={ title }
+				class="block h-full w-full object-cover"
+			/>
+
+		</div>
+
+		<h2 class="mb-2.5 text-[22px] font-semibold text-zinc-900">
+			{ title }
+		</h2>
+
+		<p class="mb-6 text-[15px] leading-6 text-zinc-500">
+			{ description }
+		</p>
+
+		<button
+			type="button"
+			class={ "w-full rounded-lg border-0 px-4 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90 " + buttonColor }
+			data-on:click={ buttonAction }
+		>
+			{ buttonText }
+		</button>
+
+	</div>
+}
