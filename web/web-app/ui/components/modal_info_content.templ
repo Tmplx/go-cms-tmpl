@@ -1,0 +1,30 @@
+package components
+
+templ ModalInfoContent(
+	title string,
+	description string,
+	buttonText string,
+	buttonColor string,
+	buttonAction string,
+) {
+
+	<div class="w-full rounded-xl bg-white p-7 shadow-[0_20px_50px_rgba(0,0,0,0.25)]">
+
+		<h2 class="text-[22px] font-semibold text-zinc-900">
+			{ title }
+		</h2>
+
+		<p class="mt-2.5 text-[15px] leading-6 text-zinc-500">
+			{ description }
+		</p>
+
+		<button
+			type="button"
+			class={ "mt-6 w-full rounded-lg border-0 px-4 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90 " + buttonColor }
+			data-on:click={ buttonAction }
+		>
+			{ buttonText }
+		</button>
+
+	</div>
+}

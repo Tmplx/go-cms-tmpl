@@ -3,18 +3,21 @@ package handler
 import (
 	"net/http"
 
+	roleP "github.com/GoEnterpricePlatform/goEP-core/pkg/identity/roles/port"
 	"github.com/GoEnterpricePlatform/goEP-core/pkg/posts/port"
 	"github.com/GoEnterpricePlatform/goEP-core/web/shared/api/middlewares"
 )
 
 type Handler struct {
 	PostSrv    port.PostSrv
+	RoleSrv    roleP.RoleSrv
 	MdwSrvTmpl *middlewares.MdwSrvTmpl
 }
 
-func NewSrcHandler(mux *http.ServeMux, templateV1 *http.ServeMux, postSrv port.PostSrv, mdwSrvtmpl *middlewares.MdwSrvTmpl) *Handler {
+func NewSrcHandler(mux *http.ServeMux, templateV1 *http.ServeMux, postSrv port.PostSrv, mdwSrvtmpl *middlewares.MdwSrvTmpl, roleSrv roleP.RoleSrv) *Handler {
 	h := &Handler{
 		PostSrv:    postSrv,
+		RoleSrv:    roleSrv,
 		MdwSrvTmpl: mdwSrvtmpl,
 	}
 
@@ -28,7 +31,7 @@ func NewSrcHandler(mux *http.ServeMux, templateV1 *http.ServeMux, postSrv port.P
 	mux.HandleFunc("/blog", h.BlogPage)
 	mux.HandleFunc("/contact", h.ContactPage)
 
-	templateV1.Handle("/goep-admin/general", 
+	templateV1.Handle("/goep-admin/general",
 		h.MdwSrvTmpl.Authenticate(
 			h.MdwSrvTmpl.RequirePermission(
 				"view.general",
@@ -36,7 +39,7 @@ func NewSrcHandler(mux *http.ServeMux, templateV1 *http.ServeMux, postSrv port.P
 			),
 		),
 	)
-	templateV1.Handle("/goep-admin/users", 
+	templateV1.Handle("/goep-admin/users",
 		h.MdwSrvTmpl.Authenticate(
 			h.MdwSrvTmpl.RequirePermission(
 				"view.users",
@@ -44,7 +47,7 @@ func NewSrcHandler(mux *http.ServeMux, templateV1 *http.ServeMux, postSrv port.P
 			),
 		),
 	)
-	templateV1.Handle("/goep-admin/roles-permissions", 
+	templateV1.Handle("/goep-admin/roles-permissions",
 		h.MdwSrvTmpl.Authenticate(
 			h.MdwSrvTmpl.RequirePermission(
 				"view.roles.permissions",
@@ -53,7 +56,7 @@ func NewSrcHandler(mux *http.ServeMux, templateV1 *http.ServeMux, postSrv port.P
 		),
 	)
 
-	templateV1.Handle("/goep-admin/settings", 
+	templateV1.Handle("/goep-admin/settings",
 		h.MdwSrvTmpl.Authenticate(
 			h.MdwSrvTmpl.RequirePermission(
 				"view.settings",
@@ -61,7 +64,7 @@ func NewSrcHandler(mux *http.ServeMux, templateV1 *http.ServeMux, postSrv port.P
 			),
 		),
 	)
-	
+
 	templateV1.HandleFunc("/goep-admin/access-denied", h.AccessDeniedPage)
 
 	return h

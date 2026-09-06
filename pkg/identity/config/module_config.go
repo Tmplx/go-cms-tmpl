@@ -20,6 +20,7 @@ import (
 	"github.com/GoEnterpricePlatform/goEP-core/pkg/identity/roles/domain"
 	roleInitializer "github.com/GoEnterpricePlatform/goEP-core/pkg/identity/roles/initializer"
 	roleRepository "github.com/GoEnterpricePlatform/goEP-core/pkg/identity/roles/repository/mongo"
+	roleService "github.com/GoEnterpricePlatform/goEP-core/pkg/identity/roles/service"
 	sessionRepository "github.com/GoEnterpricePlatform/goEP-core/pkg/identity/session/repository/mongo"
 	sessionService "github.com/GoEnterpricePlatform/goEP-core/pkg/identity/session/service"
 	tokenService "github.com/GoEnterpricePlatform/goEP-core/pkg/identity/tokens/service"
@@ -33,6 +34,7 @@ import (
 	adminP "github.com/GoEnterpricePlatform/goEP-core/pkg/identity/admin/port"
 	authP "github.com/GoEnterpricePlatform/goEP-core/pkg/identity/auth/port"
 	mailerP "github.com/GoEnterpricePlatform/goEP-core/pkg/identity/mailer/port"
+	roleP "github.com/GoEnterpricePlatform/goEP-core/pkg/identity/roles/port"
 	tokenP "github.com/GoEnterpricePlatform/goEP-core/pkg/identity/tokens/port"
 	userP "github.com/GoEnterpricePlatform/goEP-core/pkg/identity/users/port"
 	cookieP "github.com/GoEnterpricePlatform/goEP-core/pkg/shared/api/handler/cookie/port"
@@ -56,6 +58,7 @@ type Module struct {
 	TokenSrv   tokenP.TokenSrv
 	CookieSrv  cookieP.CookieSrv
 	AuthApiMdw *middlewares.AuthMiddleware
+	RoleSrv    roleP.RoleSrv
 }
 
 func NewIdentityModule(cfg ModuleConfig) (*Module, error) {
@@ -127,13 +130,14 @@ func NewIdentityModule(cfg ModuleConfig) (*Module, error) {
 	mailerSrv := mailerService.NewMailerSrv(mailerAdt, cfg.AppEnvs.AppName)
 	authSrv := authService.NewAuthSrv(userRepo, roleRepo, permissionRepo, userFileStg, sessionSrv, otpCodeSrv, mailerSrv)
 	userSrv := userService.NewUserSrv(userRepo, userFileStg, mdlName)
+	roleSrv := roleService.NewRoleSrv(roleRepo)
 
 	// service - admin
 	adminSrv := adminService.NewAdminSrv(userRepo, roleRepo, permissionRepo, sessionSrv)
 
 	// Register handlers
 	authHandler.NewAuthHandler(cfg.APIv1, authSrv, tokenSrv, cfg.AppEnvs.AppEnv, authApiMdw)
-	userHandler.NewUserHandler(cfg.APIv1, userSrv,authApiMdw)
+	userHandler.NewUserHandler(cfg.APIv1, userSrv, authApiMdw)
 
 	return &Module{
 		AuthSrv:    authSrv,
@@ -142,5 +146,6 @@ func NewIdentityModule(cfg ModuleConfig) (*Module, error) {
 		TokenSrv:   tokenSrv,
 		CookieSrv:  cookieSrv,
 		AuthApiMdw: authApiMdw,
+		RoleSrv:    roleSrv,
 	}, nil
 }

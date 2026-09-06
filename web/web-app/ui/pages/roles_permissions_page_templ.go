@@ -9,11 +9,14 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
+	"github.com/GoEnterpricePlatform/goEP-core/pkg/identity/roles/domain"
 	"github.com/GoEnterpricePlatform/goEP-core/pkg/identity/tokens/claim"
+	componentsIdentity "github.com/GoEnterpricePlatform/goEP-core/web/web-app/modules/identity/ui/components"
+	"github.com/GoEnterpricePlatform/goEP-core/web/web-app/ui/components"
 	"github.com/GoEnterpricePlatform/goEP-core/web/web-app/ui/layouts"
 )
 
-func RolesPermissionsPage(claims *claim.AccessTokenClaims) templ.Component {
+func RolesPermissionsPage(claims *claim.AccessTokenClaims, roles []*domain.Role) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -38,7 +41,7 @@ func RolesPermissionsPage(claims *claim.AccessTokenClaims) templ.Component {
 			"roles-permissions",
 			claims.Roles,
 			claims.Permissions,
-			RolesPermissionsContent(),
+			RolesPermissionsContent(roles),
 		).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -47,7 +50,7 @@ func RolesPermissionsPage(claims *claim.AccessTokenClaims) templ.Component {
 	})
 }
 
-func RolesPermissionsContent() templ.Component {
+func RolesPermissionsContent(roles []*domain.Role) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -68,7 +71,23 @@ func RolesPermissionsContent() templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section><div class=\"mb-6\"><h1 class=\"text-2xl font-bold tracking-tight text-black\">RolesPermissions</h1><p class=\"mt-1 text-sm text-zinc-500\">Welcome to your dashboard.</p></div><div class=\"grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4\"><div class=\"rounded-xl border border-zinc-200 bg-white p-5\"><p class=\"text-sm text-zinc-500\">Users</p><p class=\"mt-2 text-2xl font-bold\">120</p></div><div class=\"rounded-xl border border-zinc-200 bg-white p-5\"><p class=\"text-sm text-zinc-500\">Posts</p><p class=\"mt-2 text-2xl font-bold\">48</p></div></div></section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div data-signals=\"{\r\n\t\t\trole_form: {\r\n\t\t\t\tid: '',\r\n\t\t\t\tname: '',\r\n\t\t\t},\r\n\t\t\tmodal: {\r\n\t\t\t\tdomain:'',\r\n\t\t\t\taction: '',\r\n\t\t\t},\r\n\t\t\terror: '',\r\n\t\t\tis_loading: false,\t\t\t\r\n\t\t}\"><section class=\"w-full\"><div class=\"mb-6 flex items-center justify-between gap-5\"><div><h1 class=\"text-2xl font-bold tracking-tight text-black\">Roles and permissions</h1><p class=\"mt-1.5 text-sm text-zinc-500\">Manage application roles and their permissions.</p></div></div><div class=\"flex justify-end mb-5\"><button type=\"button\" class=\"rounded-lg bg-black px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-zinc-800\" data-on:click=\"\r\n\t\t\t\t\t\t$role_form.id = '';\r\n\t\t\t\t\t\t$role_form.name = '';\r\n\r\n\t\t\t\t\t\t$error = '';\r\n\r\n\t\t\t\t\t\t$modal.domain = 'role';\r\n\t\t\t\t\t\t$modal.action = 'form';\r\n\t\t\t\t\t\">Create</button></div><div id=\"role-list\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = componentsIdentity.RoleList(roles).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = components.ModalManager().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</section></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

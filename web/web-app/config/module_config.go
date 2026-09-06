@@ -15,14 +15,15 @@ import (
 
 	middlewareServiceTmpl "github.com/GoEnterpricePlatform/goEP-core/web/shared/api/middlewares"
 	adminHandler "github.com/GoEnterpricePlatform/goEP-core/web/web-app/modules/identity/admin/api/handler"
+	"github.com/GoEnterpricePlatform/goEP-core/web/web-app/modules/identity/roles/api/handler"
 
 	/* postHandlerWeb "github.com/GoEnterpricePlatform/goEP-core/web/standard-web/admin/api/posts/handler"
-	adminRenderer "github.com/GoEnterpricePlatform/goEP-core/web/standard-web/admin/renderer"
 	chatToolCallingHandler "github.com/GoEnterpricePlatform/goEP-core/web/standard-web/ai-tool-calling/api/handler"
 	toolCallingHandler "github.com/GoEnterpricePlatform/goEP-core/web/standard-web/ai-tool-calling/api/posts/handler"
-	toolCallingRenderer "github.com/GoEnterpricePlatform/goEP-core/web/standard-web/ai-tool-calling/renderer" */
+	*/
+	roleP "github.com/GoEnterpricePlatform/goEP-core/pkg/identity/roles/port"
 	"github.com/GoEnterpricePlatform/goEP-core/web/web-app/resources"
-	"github.com/GoEnterpricePlatform/goEP-core/web/web-app/src/api/handler"
+	srcHandler "github.com/GoEnterpricePlatform/goEP-core/web/web-app/src/api/handler"
 )
 
 type ModuleConfig struct {
@@ -41,6 +42,7 @@ type ModuleDeps struct {
 	AdminSrv    adminP.AdminSrv
 	TCService   tcP.ToolCallingSrv
 	PostService postP.PostSrv
+	RolesSrv    roleP.RoleSrv
 }
 
 func NewWebAppModule(cfg ModuleConfig) {
@@ -53,7 +55,10 @@ func NewWebAppModule(cfg ModuleConfig) {
 	adminH := adminHandler.NewAdminHandler(cfg.Deps.AdminSrv, cfg.Deps.CookieSrv, cfg.AppEnvs.ApiBaseUrl, mdwSrvTmpl)
 	adminH.RegisterRoutes(cfg.Mux, cfg.TemplateV1)
 
-	handler.NewSrcHandler(cfg.Mux, cfg.TemplateV1, cfg.Deps.PostService, mdwSrvTmpl)
+	srcHandler.NewSrcHandler(cfg.Mux, cfg.TemplateV1, cfg.Deps.PostService, mdwSrvTmpl, cfg.Deps.RolesSrv)
+
+	roleH := handler.NewRolesTmplHandler(cfg.Deps.RolesSrv,cfg.AppEnvs.ApiBaseUrl, mdwSrvTmpl)
+	roleH.RegisterRoutes(cfg.Mux,cfg.TemplateV1)
 
 	// Templates - admin
 	// adminH := adminHandler.NewAdminHandler(cfg.Deps.AdminSrv, cfg.Deps.CookieSrv, cfg.AppEnvs.ApiBaseUrl, adminR, mdwSrvTmpl)

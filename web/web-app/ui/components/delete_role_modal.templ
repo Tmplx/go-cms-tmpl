@@ -1,0 +1,32 @@
+package components
+
+templ DeleteRoleModal() {
+	@Modal(
+		"delete-role-modal",
+		"$modal.domain == 'role' && $modal.action == 'delete'",
+	) {
+		@ModalConfirmContent(
+			"Delete role",
+			"Are you sure you want to delete this role? This action cannot be undone.",
+			"Delete",
+			"Cancel",
+			"bg-black",  
+			"Deleting...",
+			`	
+				$error = '';
+				$is_loading = true;
+				@delete('/v1/roles/' + $role_form.id);
+			`,
+			`
+				$modal.domain = '';
+				$modal.action = '';
+
+				$role_form.id = '';
+				$role_form.name = '';
+
+				$error = '';
+				$loading = false;
+			`,
+		)
+	}
+}

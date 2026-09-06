@@ -1,0 +1,57 @@
+package components
+
+import (
+	"github.com/GoEnterpricePlatform/goEP-core/pkg/identity/roles/domain"
+)
+
+templ RoleRow(role *domain.Role) {
+	<tr 
+		id={ "role-row-" + role.ID }
+		class="transition-colors hover:bg-zinc-50"
+	>
+
+		<td class="px-5 py-4 text-sm text-zinc-500">
+			{ role.ID }
+		</td>
+
+		<td class="px-5 py-4">
+			<span class="font-medium text-black">
+				{ role.Name }
+			</span>
+		</td>
+
+		<td class="px-5 py-4">
+			<div class="flex items-center justify-end gap-2">
+
+				<button
+					type="button"
+					class="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-black"
+					data-on:click={
+						"$role_form.id = `" + role.ID + "`; " +
+						"$role_form.name = `" + role.Name + "`; " +
+						"$error = ''; " +
+						"$modal.domain = 'role'; " +
+						"$modal.action = 'form';"
+					}
+				>
+					Edit
+				</button>
+
+				<button
+					type="button"
+					class="rounded-lg bg-black px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-800"
+					data-on:click={
+						"$role_form.id = `" + role.ID + "`; " +
+						"$role_form.name = `" + role.Name + "`; " +
+						"$error = ''; " +
+						"$modal.domain = 'role'; " +
+						"$modal.action = 'delete';"
+					}
+				>
+					Delete
+				</button>
+
+			</div>
+		</td>
+	</tr>
+}
