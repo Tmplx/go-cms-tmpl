@@ -3,6 +3,8 @@ version: "3"
 env:
   STATIC_DIR: "web/web-app/resources/static"
 
+dotenv: ['.env']
+
 tasks:
   # The `Run:` tasks below are used together for development builds and will live-reload the server
   run:templ:
@@ -36,6 +38,63 @@ tasks:
       - run:web:styles
       - run:templ
       - run:server
+
+  build:templ:
+    cmds:
+      - go tool templ generate
+    sources:
+      - "**/*.templ"
+    generates:
+      - "**/*_templ.go"
+  
+  build:web:styles:
+    cmds:
+      - go tool gotailwind -i web/web-app/src/css/app.css -o $STATIC_DIR/css/app.css
+    
+    # These are all the files that can affect your generated CSS.
+    sources:
+      - "./web/web-app/src/css/**/*.css"
+      - "./web/web-app/src/ui/**/*.templ"
+      - "./web/web-app/modules/**/*.templ"
+    generates:
+      - "{{.STATIC_DIR}}/css/app.css"
+
+
+  build:ts:compiler:
+    cmds:
+      - go run cmd/api/env/dev/ts-compiler/main.go
+    sources:
+      - "./web/web-app/src/ts/**/*.ts"
+    generates:
+      - "./web/web-app/resources/static/js/**/*.js"
+
+  build:
+    # We could also use goep-core.exe
+    # go build -o goep-core.exe main.go
+
+    cmds:
+    - |
+      {{if eq OS "windows"}}
+      go build -tags=prod -o bin/main.exe ./cmd/api/env/prod
+      {{else}}
+      go build -tags=prod -o bin/main ./cmd/api/env/prod
+      {{end}}
+
+  deps:
+    - build:templ
+    - build:web:styles
+    - build:ts:compiler
+
+  run:build:
+    cmds:
+      - |
+        {{if eq OS "windows"}}
+        ./bin/main.exe
+        {{else}}
+        ./bin/main
+        {{end}}
+    deps:
+      - build
 
   default:
     cmds:

@@ -9,11 +9,12 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
+	"github.com/GoEnterpricePlatform/goEP-core/web/web-app/domain"
+	"github.com/GoEnterpricePlatform/goEP-core/web/web-app/src/ui/components"
 	"github.com/GoEnterpricePlatform/goEP-core/web/web-app/src/ui/layouts"
-	// "github.com/GoEnterpricePlatform/goEP-core/web/web-app/resources"
 )
 
-func GoepAdminPage() templ.Component {
+func BlogPage(posts []*domain.Post) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -34,7 +35,7 @@ func GoepAdminPage() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = layouts.BaseLayout("goep admin", GoepAdminContent()).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = layouts.NavbarLayout("blog", BlogContent(posts)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -42,7 +43,7 @@ func GoepAdminPage() templ.Component {
 	})
 }
 
-func GoepAdminContent() templ.Component {
+func BlogContent(posts []*domain.Post) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -63,7 +64,17 @@ func GoepAdminContent() templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<h1>GoEp admin page</h1>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section class=\"mx-auto max-w-7xl px-6 py-12 lg:px-8\"><div class=\"mb-10\"><p class=\"text-sm font-medium uppercase tracking-wider text-zinc-500\">Blog</p><h1 class=\"mt-2 text-3xl font-bold tracking-tight text-black sm:text-4xl\">Latest posts</h1><p class=\"mt-3 max-w-2xl text-zinc-600\">Articles, ideas and updates from the platform.</p></div><ul class=\"grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		for _, post := range posts {
+			templ_7745c5c3_Err = components.PostCard(post).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</ul></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

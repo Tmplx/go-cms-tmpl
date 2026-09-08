@@ -10,10 +10,9 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import (
 	"github.com/GoEnterpricePlatform/goEP-core/web/web-app/src/ui/layouts"
-	// "github.com/GoEnterpricePlatform/goEP-core/web/web-app/resources"
 )
 
-func GoepAdminPage() templ.Component {
+func AccessDeniedPage() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -34,7 +33,7 @@ func GoepAdminPage() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = layouts.BaseLayout("goep admin", GoepAdminContent()).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = layouts.BaseLayout("access denied", AccessDeniedContent()).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -42,7 +41,7 @@ func GoepAdminPage() templ.Component {
 	})
 }
 
-func GoepAdminContent() templ.Component {
+func AccessDeniedContent() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -63,7 +62,7 @@ func GoepAdminContent() templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<h1>GoEp admin page</h1>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section class=\"mx-auto max-w-7xl px-6 py-16 lg:px-8\"><div class=\"flex min-h-[80vh] items-center justify-center\"><div class=\"w-full max-w-md\"><p class=\"text-sm font-medium uppercase tracking-wider text-zinc-500\">Access denied</p><div class=\"mt-6 flex flex-col gap-3\"><a href=\"/\" class=\"w-full rounded-lg border border-zinc-300 px-4 py-2.5 text-center text-sm font-semibold text-zinc-700 transition-colors hover:bg-zinc-100\">Back to home</a> <a href=\"/v1/goep-admin/auth/sign-in\" class=\"w-full rounded-lg bg-black px-4 py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-zinc-800\">Sign in</a></div></div></div></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

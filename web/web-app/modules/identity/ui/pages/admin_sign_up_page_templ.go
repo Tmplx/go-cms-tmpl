@@ -11,7 +11,7 @@ import templruntime "github.com/a-h/templ/runtime"
 import (
 	"github.com/GoEnterpricePlatform/goEP-core/web/web-app/modules/identity/ui/components"
 	"github.com/GoEnterpricePlatform/goEP-core/web/web-app/resources"
-	"github.com/GoEnterpricePlatform/goEP-core/web/web-app/ui/layouts"
+	"github.com/GoEnterpricePlatform/goEP-core/web/web-app/src/ui/layouts"
 )
 
 func AdminSignUpPage() templ.Component {
