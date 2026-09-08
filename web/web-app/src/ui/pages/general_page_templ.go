@@ -9,11 +9,11 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
+	"github.com/GoEnterpricePlatform/goEP-core/pkg/identity/tokens/claim"
 	"github.com/GoEnterpricePlatform/goEP-core/web/web-app/src/ui/layouts"
-	// "github.com/GoEnterpricePlatform/goEP-core/web/web-app/resources"
 )
 
-func GoepAdminPage() templ.Component {
+func GeneralPage(claims *claim.AccessTokenClaims) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -34,7 +34,12 @@ func GoepAdminPage() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = layouts.BaseLayout("goep admin", GoepAdminContent()).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = layouts.DashboardLayout(
+			"general",
+			claims.Roles,
+			claims.Permissions,
+			GeneralContent(),
+		).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -42,7 +47,7 @@ func GoepAdminPage() templ.Component {
 	})
 }
 
-func GoepAdminContent() templ.Component {
+func GeneralContent() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -63,7 +68,7 @@ func GoepAdminContent() templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<h1>GoEp admin page</h1>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section><div class=\"mb-6\"><h1 class=\"text-2xl font-bold tracking-tight text-black\">General</h1><p class=\"mt-1 text-sm text-zinc-500\">Welcome to your dashboard.</p></div><div class=\"grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4\"><div class=\"rounded-xl border border-zinc-200 bg-white p-5\"><p class=\"text-sm text-zinc-500\">Users</p><p class=\"mt-2 text-2xl font-bold\">120</p></div><div class=\"rounded-xl border border-zinc-200 bg-white p-5\"><p class=\"text-sm text-zinc-500\">Posts</p><p class=\"mt-2 text-2xl font-bold\">48</p></div></div></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -37,3 +37,7 @@ tmp/
 
 # Keys
 *.key
+
+
+.task
+bin/
