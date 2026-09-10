@@ -22,3 +22,17 @@ services:
       - "${MINIO_CONSOLE_PORT}:${MINIO_CONSOLE_PORT}"
     volumes:
       - ./${APP_NAME}_data/minio_data:/data
+
+  # uncomment if you want to try the full app make sure to create the image
+  # y en el  .env usa el nombre de los contenedores minio y mongodb en ves de localhost
+  #goep-core:
+  #  image: goep-core:latest
+  #  container_name: goep_core
+  #  restart: unless-stopped
+  #  env_file:
+  #    - .env
+  #  ports:
+  #    - "8001:8001"
+  #  depends_on:
+  #    - mongodb
+  #    - minio
