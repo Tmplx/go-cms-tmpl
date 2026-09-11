@@ -54,5 +54,5 @@ func (h *Handler) SignUp(w http.ResponseWriter, r *http.Request) {
 
 	// redirect to SignIn
 	sse := datastar.NewSSE(w, r)
-	sse.Redirect("/v1/admin/auth/sign-in")
+	sse.Redirect("/v1/goep-admin/auth/sign-in")
 }
