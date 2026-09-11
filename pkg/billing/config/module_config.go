@@ -22,7 +22,6 @@ import (
 )
 
 type ModuleConfig struct {
-	AppStack   *config.AppStack
 	AppEnvs    *config.AppEnvs
 	AppClients *config.AppClients
 	APIv1      *http.ServeMux

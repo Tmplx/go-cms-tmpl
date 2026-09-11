@@ -12,7 +12,7 @@ post {
 
 body:json {
   {
-    "email":"user@yopmail.com",
+    "email":"fernan@yopmail.com",
     "password":"123456()Pass"
   }
 }
@@ -23,7 +23,10 @@ script:post-response {
   const jsonResponse = response;
   
   // Save the access token to environment variables (SECRET - stored in vars:secret)
-  bru.setEnvVar('access_token', jsonResponse.session.access_token);
+  // Save the access token only if a session exists
+  if (jsonResponse.session) {
+    bru.setEnvVar('access_token', jsonResponse.session.access_token);
+  }
   
   // Optional: Save other user data (these can be in vars if not sensitive)
   // bru.setEnvVar('user_id', jsonResponse.user.id);
