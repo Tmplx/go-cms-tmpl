@@ -24,6 +24,7 @@ import (
 	sessionRepository "github.com/GoEnterpricePlatform/goEP-core/pkg/identity/session/repository/mongo"
 	sessionService "github.com/GoEnterpricePlatform/goEP-core/pkg/identity/session/service"
 	tokenService "github.com/GoEnterpricePlatform/goEP-core/pkg/identity/tokens/service"
+	"github.com/GoEnterpricePlatform/goEP-core/pkg/identity/users/file-storage/disabled"
 	userFileStorage "github.com/GoEnterpricePlatform/goEP-core/pkg/identity/users/file-storage/minio"
 	userHandler "github.com/GoEnterpricePlatform/goEP-core/pkg/identity/users/handler"
 	userRepository "github.com/GoEnterpricePlatform/goEP-core/pkg/identity/users/repository/mongo"
@@ -36,6 +37,7 @@ import (
 	mailerP "github.com/GoEnterpricePlatform/goEP-core/pkg/identity/mailer/port"
 	roleP "github.com/GoEnterpricePlatform/goEP-core/pkg/identity/roles/port"
 	tokenP "github.com/GoEnterpricePlatform/goEP-core/pkg/identity/tokens/port"
+	userFSP "github.com/GoEnterpricePlatform/goEP-core/pkg/identity/users/port"
 	userP "github.com/GoEnterpricePlatform/goEP-core/pkg/identity/users/port"
 	cookieP "github.com/GoEnterpricePlatform/goEP-core/pkg/shared/api/handler/cookie/port"
 
@@ -43,7 +45,6 @@ import (
 )
 
 type ModuleConfig struct {
-	AppStack   *config.AppStack
 	AppEnvs    *config.AppEnvs
 	AppClients *config.AppClients
 	APIv1      *http.ServeMux
@@ -62,14 +63,22 @@ type Module struct {
 }
 
 func NewIdentityModule(cfg ModuleConfig) (*Module, error) {
-
 	// Select mailer provider
 	var mailerAdt mailerP.MailerAdt
-	switch cfg.AppStack.Mail {
+	switch cfg.AppEnvs.MailerProvider {
 	case config.MailResend:
 		mailerAdt = resend.NewResendAdt(cfg.AppClients.ResendCli, cfg.AppEnvs.ResendEmailFrom)
 	case config.MailGmail:
 		mailerAdt = gmailsmtp.NewGmailSmtpAdt(cfg.AppClients.GmailSmtp, cfg.AppEnvs.GmailAddr, cfg.AppEnvs.GmailFrom)
+	}
+
+	// File Storage
+	var userFileStg userFSP.UserFileStg
+	switch cfg.AppEnvs.FileStorageProvider {
+	case config.FSMinio:
+		userFileStg = userFileStorage.NewUserFileStg(cfg.AppClients.MinioCli.Client, cfg.AppEnvs.MinioBucketName, 0)
+	case config.FSOptional:
+		userFileStg = disabled.NewDisabledAdapter()
 	}
 
 	// module name
@@ -78,7 +87,8 @@ func NewIdentityModule(cfg ModuleConfig) (*Module, error) {
 	// collections
 	userCollName := fmt.Sprintf("%s_users", mdlName)
 	userColl := cfg.DB.Collection(userCollName)
-
+	
+	
 	sessionCollName := fmt.Sprintf("%s_sessions", mdlName)
 	sessionColl := cfg.DB.Collection(sessionCollName)
 
@@ -90,13 +100,13 @@ func NewIdentityModule(cfg ModuleConfig) (*Module, error) {
 
 	permissionCollName := fmt.Sprintf("%s_permissions", mdlName)
 	permissionColl := cfg.DB.Collection(permissionCollName)
-
+	
 	userRepo := userRepository.NewUserRepo(cfg.AppClients.MongoConn.DB, userColl)
 	sessionRepo := sessionRepository.NewSessionRepo(cfg.AppClients.MongoConn.DB, sessionColl)
 	otpCodeRepo := otpCodeRepository.NewOtpCodeRepo(cfg.AppClients.MongoConn.DB, otpCodeColl)
 	roleRepo := roleRepository.NewRoleRepo(cfg.AppClients.MongoConn.DB, roleColl)
 	permissionRepo := permissionRepository.NewPermissionRepo(cfg.AppClients.MongoConn.DB, permissionColl)
-
+	
 	// Indexes
 	err := userRepo.CreateIndexes()
 	if err != nil {
@@ -109,7 +119,7 @@ func NewIdentityModule(cfg ModuleConfig) (*Module, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	
 	roleItz := roleInitializer.NewRoleItz(roleRepo)
 	if err := roleItz.SeedEssentialRoles(context.Background()); err != nil {
 		log.Fatal(err)
@@ -117,10 +127,7 @@ func NewIdentityModule(cfg ModuleConfig) (*Module, error) {
 	if err := roleItz.AddPermissionsToRole(context.Background(), string(domain.RoleSystemAdmin), permissions); err != nil {
 		log.Fatal(err)
 	}
-
-	// File Storage
-	userFileStg := userFileStorage.NewUserFileStg(cfg.AppClients.MinioCli.Client, cfg.AppEnvs.MinioBucketName, 0)
-
+	
 	// Services
 	tokenSrv := tokenService.NewTokenSrv(cfg.AppEnvs.JWTAccessSecret, cfg.AppEnvs.JWTRefreshSecret, cfg.AppEnvs.JWTAccessExpIn, cfg.AppEnvs.JWTRefreshExpIn, cfg.AppEnvs.JWTRefreshRememberMeExpIn, cfg.AppEnvs.JWTIssuer)
 	authApiMdw := middlewares.NewAuthMdw(tokenSrv)

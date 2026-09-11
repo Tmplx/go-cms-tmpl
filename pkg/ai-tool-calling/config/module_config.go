@@ -19,7 +19,6 @@ import (
 )
 
 type ModuleConfig struct {
-	AppStack   *config.AppStack
 	AppEnvs    *config.AppEnvs
 	AppClients *config.AppClients
 	APIv1      *http.ServeMux
@@ -35,19 +34,21 @@ type Module struct {
 }
 
 func NewAiModule(cfg ModuleConfig) (*Module, error) {
-
 	var toolCallingAdapter tcP.ToolCallingAdt
 
 	// The openai service is optional, and it is the responsibility of the developer or admin to configure it
 	// this way we don't touch the code, it would only be from the UI to see how to handle it
 	var openAiAdt *openaiAdapter.Adapter
 	var disabledAdt *disabled.DisabledAdapter
-	if cfg.AppClients.OpenaiCli != nil {
+
+	// Select mailer provider
+	switch cfg.AppEnvs.LLMProvider {
+	case config.LLMOpenAI:
 		openAiAdt = openaiAdapter.NewToolCallingAdt(
 			cfg.AppClients.OpenaiCli.Client,
 		)
 		toolCallingAdapter = openAiAdt
-	} else {
+	case config.LLMOptional:
 		disabledAdt = disabled.NewDisabledAdapter()
 		toolCallingAdapter = disabledAdt
 	}

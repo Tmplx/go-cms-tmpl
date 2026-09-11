@@ -10,6 +10,7 @@ import (
 	resendClient "github.com/GoEnterpricePlatform/goEP-core/internal/resend"
 
 	"github.com/resend/resend-go/v2"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 type AppClients struct {
@@ -19,6 +20,7 @@ type AppClients struct {
 
 	// DB
 	MongoConn *mongoClient.Data
+	DB        *mongo.Database
 
 	// File Storage
 	MinioCli *minioClient.MinioClient
@@ -31,20 +33,20 @@ func NewClients() *AppClients {
 	return &AppClients{}
 }
 
-func (ac *AppClients) GetClients(appStack *AppStack, appEnvs *AppEnvs) ( error) {
-	switch appStack.Mail {
+func (ac *AppClients) GetClients(appEnvs *AppEnvs) error {
+	switch appEnvs.MailerProvider {
 	case MailResend:
 		ac.ResendCli = resendClient.NewResendClient(appEnvs.ResendApiKey)
 	case MailGmail:
 		ac.GmailSmtp = gmailsmtp.NewGmailSmtpClient(appEnvs.GmailUsername, appEnvs.GmailPass, appEnvs.GmailHost)
 	}
 
-	switch appStack.DB {
+	switch appEnvs.DBProvider {
 	case DBMongo:
 		ac.MongoConn = mongoClient.New(appEnvs.MongoDBUri)
 	}
 
-	switch appStack.FileStg {
+	switch appEnvs.FileStorageProvider {
 	case FSMinio:
 		minioCli, err := minioClient.NewClient(appEnvs.MinioEndpoint, appEnvs.MinioAccessKey, appEnvs.MinioSecretKey, appEnvs.MinioUseSSL)
 		if err != nil {
@@ -53,10 +55,33 @@ func (ac *AppClients) GetClients(appStack *AppStack, appEnvs *AppEnvs) ( error) 
 		ac.MinioCli = minioCli
 	}
 
-	// Optionals services
-	if appEnvs.OpenAiApiKey != "" {
-		ac.OpenaiCli = openai.NewOpenAIClient(appEnvs.OpenAiApiKey)
-	} 
 
+	switch appEnvs.LLMProvider {
+	case LLMOpenAI:
+		ac.OpenaiCli = openai.NewOpenAIClient(appEnvs.OpenAiApiKey)
+	}
+
+	return nil
+}
+
+// Initialize the infrastructure in the services that we are using and that are strictly
+// necessary for all modules; if it is only for a specific module, it should go in the
+// initializer folder within your module.
+func (ac *AppClients) InitializeServices(appEnvs *AppEnvs) error {
+
+	switch appEnvs.DBProvider {
+	case DBMongo:
+		// - MongoDB
+		ac.DB = ac.MongoConn.DB.Database(appEnvs.MongoInitDB)
+		ac.MongoConn.Ping()
+	}
+
+	switch appEnvs.FileStorageProvider {
+	case FSMinio:
+		err := ac.MinioCli.CreateStorage(appEnvs.MinioBucketName)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }

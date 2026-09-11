@@ -22,30 +22,13 @@ import (
 func New() http.Handler {
 	mux := http.NewServeMux()
 
-	// define app Stack
-	appStack := appConfig.NewAppStack(appConfig.DBMongo, appConfig.MailGmail, appConfig.FSMinio)
-
 	// get envs
 	appEnvs := appConfig.NewAppEnvs()
-	appEnvs.Load(appStack)
+	appEnvs.Load()
 
 	appClients := appConfig.NewClients()
-	appClients.GetClients(appStack, appEnvs)
-
-	// Initialize the infrastructure in the services that we are using and that are strictly
-	// necessary for all modules; if it is only for a specific module, it should go in the
-	// initializer folder within your module.
-	// TODO: create an Initialize() method for AppClients. Both services are required so at this time
-	// TODO:there is no validation they both run.
-	// - MongoDB
-	db := appClients.MongoConn.DB.Database(appEnvs.MongoInitDB)
-	appClients.MongoConn.Ping()
-
-	// - Minio
-	err := appClients.MinioCli.CreateStorage(appEnvs.MinioBucketName)
-	if err != nil {
-		log.Fatal(err)
-	}
+	appClients.GetClients(appEnvs)
+	appClients.InitializeServices(appEnvs)
 
 	zapLogger := logger.NewHttpLogger(appEnvs.AppEnv)
 
@@ -65,22 +48,20 @@ func New() http.Handler {
 	// Call the modules
 
 	identityMdl, err := identityModule.NewIdentityModule(identityModule.ModuleConfig{
-		AppStack:   appStack,
 		AppEnvs:    appEnvs,
 		AppClients: appClients,
 		APIv1:      v1,
-		DB:         db,
+		DB:         appClients.DB,
 	})
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	postMdl, err := postModule.NewPostModule(postModule.ModuleConfig{
-		AppStack:   appStack,
 		AppEnvs:    appEnvs,
 		AppClients: appClients,
 		APIv1:      v1,
-		DB:         db,
+		DB:         appClients.DB,
 		Deps: postModule.ModuleDeps{
 			AuthApiMdw: identityMdl.AuthApiMdw,
 		},
@@ -90,22 +71,20 @@ func New() http.Handler {
 	}
 
 	_, err = billingModule.NewBillingModule(billingModule.ModuleConfig{
-		AppStack:   appStack,
 		AppEnvs:    appEnvs,
 		AppClients: appClients,
 		APIv1:      v1,
-		DB:         db,
+		DB:         appClients.DB,
 		Deps: billingModule.ModuleDeps{
 			AuthApiMdw: identityMdl.AuthApiMdw,
 		},
 	})
 
 	_, err = catalogModule.NewCatalogModule(catalogModule.ModuleConfig{
-		AppStack:   appStack,
 		AppEnvs:    appEnvs,
 		AppClients: appClients,
 		APIv1:      v1,
-		DB:         db,
+		DB:         appClients.DB,
 		Deps: catalogModule.ModuleDeps{
 			AuthApiMdw: identityMdl.AuthApiMdw,
 		},
@@ -116,7 +95,6 @@ func New() http.Handler {
 
 	// Optional services
 	aiMdl, err := aiModule.NewAiModule(aiModule.ModuleConfig{
-		AppStack:   appStack,
 		AppEnvs:    appEnvs,
 		AppClients: appClients,
 		APIv1:      v1,
