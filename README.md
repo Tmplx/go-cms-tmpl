@@ -14,7 +14,7 @@ Designed with clean architecture principles, it allows teams to extend, branch a
 - **Language:** Go (Golang)
 - **Architecture:** Hexagonal (Ports & Adapters)
 - **Database:** MongoDB
-- **Storage:** S3-compatible (MinIO local / AWS S3 prod)
+- **Storage:** S3-compatible (MinIO / AWS S3)
 - **API:** REST
 - **Email:** Resend or Gmail (SMTP)
 - **Frontend:** Templ + Datastar + TypeScript (extensible to React separately)
@@ -27,6 +27,7 @@ Designed with clean architecture principles, it allows teams to extend, branch a
 - Role-Based Access Control
 - Permission-based authorization
 - Authorization handled via HTTP middleware.
+- Permission-based admin panel
 
 ## Installation
 
