@@ -1,28 +1,24 @@
 # GoEP core
 
-GoEp Core is a modular enterprise system template built with Golang.
+GoEp Core is a modular template for building applications in Go.
 
-It provides a scalable foundation composed of independent business modules that a modern enterprise platform requires — such as identity, authorization, content & Information Management.
+Designed with clean architecture principles, it allows teams to extend, branch and evolve the system fully customized with long-term maintainability in mind.
 
-Designed with clean architecture principles, it enables teams to extend, fork, and evolve the system into fully customized enterprise solutions with long-term maintainability in mind.
-
-| Imagen 1                                                                                                  | Imagen 2                                                                                                |
-| --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| <img width="400" src="https://github.com/user-attachments/assets/1d9986cf-728d-4583-a7c8-b0dfb5509a8e" /> | <img src="https://github.com/user-attachments/assets/69602576-efce-4635-ab1e-ec2398c76b12" width="400"> |
-| <img src="https://github.com/user-attachments/assets/0e5f99fd-f523-4e85-83d1-e365d1d5e068" width="400">   | <img src="https://github.com/user-attachments/assets/920fa934-78c2-401f-9ff5-8d358dde96db" width="400"> |
-| <img width="2838" height="1466" alt="image" src="https://github.com/user-attachments/assets/8b1f6309-6b3d-48af-bdce-60308aeabf30" /> | <img width="2834" height="1468" alt="image" src="https://github.com/user-attachments/assets/83004cdf-fd5b-492f-9f33-9c1e100c26e4" />
-
-
+<img width="400" height="204" alt="image" src="https://github.com/user-attachments/assets/7418bed6-0bd3-402c-ab4d-6c0ef5b01977" />
+<img width="400" height="204" alt="image" src="https://github.com/user-attachments/assets/14705738-f83e-47bb-9b80-a1a9e21f170a" />
+<img width="400" height="204" alt="image" src="https://github.com/user-attachments/assets/8cffade1-ed25-48d7-af27-164de220f5e5" />
+<img width="400" height="204" alt="image" src="https://github.com/user-attachments/assets/e3e54b89-72c5-428f-a44a-be50d878679a" />
 
 ## Architecture
 
 - **Language:** Go (Golang)
-- **Architecture:** Hexagonal Architecture
+- **Architecture:** Hexagonal (Ports & Adapters)
 - **Database:** MongoDB
-- **Storage:** S3-compatible (MinIO / AWS S3)
-- **API Style:** REST
-- **Frontend:** Can be extended with React or any web frontend
-- **Email:** Can use Resend or Gmail to send emails
+- **Storage:** S3-compatible (MinIO local / AWS S3 prod)
+- **API:** REST
+- **Email:** Resend or Gmail (SMTP)
+- **Frontend:** Templ + Datastar + TypeScript (extensible to React separately)
+
 
 ## Authentication & Authorization
 
@@ -79,7 +75,18 @@ Designed with clean architecture principles, it enables teams to extend, fork, a
    - On Windows, Docker Desktop must be open.
    - Skips this step if the containers are already running.
 
-6. MinIO Configuration
+6. Run the project, visit http://localhost:8000.
+
+   ```bash
+   go tool task run
+   ```
+
+   Notes:
+   This task runs in watch mode — it stays attentive to changes in Templ, Tailwind, and TypeScript, recompiling and reloading automatically as you      edit. Just save your files and let it do the rest.
+
+---
+
+### If you want to use MinIO as file storage
 
    Newer versions of MinIO don’t allow creating credentials via the UI, so we’ll use the (MinIO Client)[https://github.com/minio/mc]
 
@@ -108,11 +115,14 @@ Designed with clean architecture principles, it enables teams to extend, fork, a
    Set the new MinIO user credentials in the .env file:
 
    ```
+   FILE_STORAGE_PROVIDER=minio
+   MINIO_ENDPOINT=localhost:9000
+   MINIO_SECURE=false
+
    MINIO_ACCESS_KEY=appuser
    MINIO_SECRET_KEY=appusersecret
    ```
 
-7. Run the project:
-   ```bash
-   make run
-   ```
+### Recommended VS Code extensions
+- [https://marketplace.visualstudio.com/items?itemName=starfederation.datastar-vscode](Datastar)
+- [https://marketplace.visualstudio.com/items?itemName=a-h.templ](Templ)
