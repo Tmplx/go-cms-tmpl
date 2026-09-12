@@ -39,6 +39,8 @@ require (
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping v0.59.0 // indirect
 	github.com/Ladicle/tabwriter v1.0.0 // indirect
 	github.com/Masterminds/semver/v3 v3.5.0 // indirect
+	github.com/PaddleHQ/paddle-go-sdk v1.0.0 // indirect
+	github.com/PaddleHQ/paddle-go-sdk/v5 v5.2.0 // indirect
 	github.com/a-h/parse v0.0.0-20250122154542-74294addb73e // indirect
 	github.com/air-verse/air v1.67.1 // indirect
 	github.com/alecthomas/chroma/v2 v2.27.0 // indirect
@@ -90,6 +92,8 @@ require (
 	github.com/felixge/httpsnoop v1.1.0 // indirect
 	github.com/fsnotify/fsnotify v1.10.1 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.8 // indirect
+	github.com/ggicci/httpin v0.20.3 // indirect
+	github.com/ggicci/owl v0.8.2 // indirect
 	github.com/go-ini/ini v1.67.0 // indirect
 	github.com/go-jose/go-jose/v4 v4.1.4 // indirect
 	github.com/go-logr/logr v1.4.4 // indirect

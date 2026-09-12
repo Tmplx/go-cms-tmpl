@@ -5,6 +5,7 @@ type DBProvider string
 type FSProvider string
 type LLMProvider string
 
+// There may be several cases where you use one or the other provider where you use both where it is optional
 const (
 	MailGmail  MailerProvider = "gmail"
 	MailResend MailerProvider = "resend"
