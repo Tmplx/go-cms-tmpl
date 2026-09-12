@@ -7,6 +7,7 @@ import (
 	minioClient "github.com/GoEnterpricePlatform/goEP-core/internal/minio"
 	mongoClient "github.com/GoEnterpricePlatform/goEP-core/internal/mongo"
 	openai "github.com/GoEnterpricePlatform/goEP-core/internal/open-ai"
+	paddleClient "github.com/GoEnterpricePlatform/goEP-core/internal/paddle"
 	resendClient "github.com/GoEnterpricePlatform/goEP-core/internal/resend"
 
 	"github.com/resend/resend-go/v2"
@@ -27,6 +28,9 @@ type AppClients struct {
 
 	// Optionals services
 	OpenaiCli *openai.OpenaiClient
+
+	// optional paddle
+	PaddleCli *paddleClient.PaddleClient
 }
 
 func NewClients() *AppClients {
@@ -55,12 +59,18 @@ func (ac *AppClients) GetClients(appEnvs *AppEnvs) error {
 		ac.MinioCli = minioCli
 	}
 
-
 	switch appEnvs.LLMProvider {
 	case LLMOpenAI:
 		ac.OpenaiCli = openai.NewOpenAIClient(appEnvs.OpenAiApiKey)
 	}
 
+	if appEnvs.IsEnableMorPaddle {
+		paddleCli, err := paddleClient.NewPaddleClient(appEnvs.PaddleApiKey)
+		if err != nil {
+			return err
+		}
+		ac.PaddleCli = paddleCli
+	}
 	return nil
 }
 

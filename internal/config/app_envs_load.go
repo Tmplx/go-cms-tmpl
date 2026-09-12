@@ -4,6 +4,7 @@ import (
 	"cmp"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -61,6 +62,19 @@ func (ae *AppEnvs) Load() {
 		log.Fatalf("invalid FILE_STORAGE_PROVIDER: %q", fileStorageProviderValue)
 	}
 
+	// We don't know if one or the other MoR or both will be used, so I will validate it separately and not switch
+	isEnableMorPaddle, err := strconv.ParseBool(cmp.Or(os.Getenv("IS_ENABLE_MOR_PADDLE"), "false"))
+	if err != nil {
+		log.Fatal("IS_ENABLE_MOR_PADDLE must be a boolean")
+	}
+
+	// paddle
+	var paddleApiKey string
+
+	if isEnableMorPaddle {
+		paddleApiKey = mustGetEnv("PADDLE_API_KEY")
+	}
+
 	// Auth - tokens
 	accessExp := cmp.Or(os.Getenv("JWT_ACCESS_EXP_IN"), "15m")
 	refreshExp := cmp.Or(os.Getenv("JWT_REFRESH_EXP_IN"), "168h")
@@ -98,7 +112,6 @@ func (ae *AppEnvs) Load() {
 	default:
 		log.Fatalf("invalid LLM_PROVIDER: %q", llmProviderValue)
 	}
-
 
 	// Cookies
 	// JWT_ACCESS_COOKIE_EXP_IN defines how long the access token cookie
@@ -171,6 +184,8 @@ func (ae *AppEnvs) Load() {
 	ae.GmailAddr = gmailAddr
 	ae.LLMProvider = llmProvider
 	ae.OpenAiApiKey = openaiApiKey
+	ae.IsEnableMorPaddle = isEnableMorPaddle
+	ae.PaddleApiKey = paddleApiKey
 	ae.JWTAccessSecret = mustGetEnv("JWT_ACCESS_TOKEN")
 	ae.JWTRefreshSecret = mustGetEnv("JWT_REFRESH_TOKEN")
 	ae.JWTIssuer = mustGetEnv("JWT_ISS")
